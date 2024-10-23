@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compressed Data Request</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product List</h1>
+    <p id="status">Loading products...</p>
+    <pre id="products"></pre>
+
+    <script>
+        // Fetch the large product list
+        fetch('http://localhost:5000/products', {
+            headers: {
+                // You can explicitly request compressed response, but it's optional as browsers do this automatically
+                'Accept-Encoding': 'gzip, deflate',
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Parse the JSON response
+            return response.json();
+        })
+        .then(data => {
+            // Display the fetched data on the page
+            document.getElementById('status').innerText = `Loaded ${data.length} products!`;
+            document.getElementById('products').innerText = JSON.stringify(data.slice(0, 10), null, 2); // Display only the first 10 products
+        })
+        .catch(error => {
+            // Handle any errors
+            document.getElementById('status').innerText = `Error: ${error.message}`;
+        });
+    </script>
+</body>
+</html>
